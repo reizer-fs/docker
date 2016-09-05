@@ -1,0 +1,2 @@
+docker run --name squid -d --volume /appsef/SQUID/cache:/var/cache/squid --publish 3128:3128 opensuse-squid
+docker run --name apache -d --volume /appsef/APACHE/DIR_1/wordpress:/var/www --publish 80:80 opensuse-apache
