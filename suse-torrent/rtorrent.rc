@@ -1,0 +1,47 @@
+# Location where to download temporary files
+ directory = /var/data/rDownloads
+
+# Folder to save & resume rtorrent sessions
+ session = /var/data/session
+
+# Other Settings
+ upload_rate = 10
+ download_rate = 200
+ peer_exchange = yes
+ http_proxy=10.211.55.21:3128
+
+# DHT options
+ dht = auto
+
+# custom throttles settings
+ throttle_up = low,10
+ throttle_down = low,10
+ throttle_up = med,20
+ throttle_down = med,20
+
+# rtorrent_Watch is a folder for new torrents
+ schedule = watch_directory,0,10,load_start=/var/data/watch/*.torrent
+ schedule = tied_directory,10,10,start_tied=
+ schedule = untied_directory,10,10,close_untied=
+
+# Enable the default ratio group
+ ratio.enable=
+
+# Modify the limits, the defaults is optimal.
+ ratio.min.set=50
+ ratio.max.set=150
+ ratio.upload.set=20M
+
+# Port range to use for listening.
+ port_range = 55900-56000
+
+# Start opening ports at a random position within the port range.
+ port_random = yes
+
+
+# Modify the command triggered when the ratio is reached.
+ system.method.set = group.seeding.ratio.command, d.close=, d.erase=
+
+# Transfer the finished torrents to rtorrent_FullDownload_Files folder
+ system.method.set_key = event.download.finished,rm_torrent,"execute=rm,$d.get_tied_to_file="
+ system.method.set_key = event.download.finished,move_complete,"execute=mv,-u,$d.get_base_path=,/var/data/rDownloads/ ;d.set_directory=/var/data/rDownloads/"
