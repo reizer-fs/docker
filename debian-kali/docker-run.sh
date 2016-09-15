@@ -21,7 +21,7 @@ case $TYPE in
 	torrent) CONTAINER="suse-torrent";;
 	gitlab) CONTAINER="suse-gitlab";;
 	gcc) CONTAINER="suse-gcc";;
-	kali) CONTAINER="debian-kali";;
+	kali) CONTAINER="kalilinux/kali-linux-docker";;
 	*) help && exit 1 ;;
 esac
 
