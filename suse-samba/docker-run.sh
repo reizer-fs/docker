@@ -1,4 +1,4 @@
-VIP="samba-basic"
+VIP="samba"
 ENV_DIRECTORY="/data/docker/samba/$VIP"
 SAMBA_DIR="box downloads"
 IP_VHOST=`getent hosts $VIP | awk '{print $1}'`
