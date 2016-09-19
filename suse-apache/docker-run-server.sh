@@ -26,14 +26,20 @@ esac
 
 VIP=`getent hosts $HOSTNAME | awk '{print $1}'`
 ENV_DIRECTORY="/data/docker/$TYPE/$HOSTNAME"
+DATA_VOLUMES="etc/apache2 var/www" 
 
-if [ ! -d $ENV_DIRECTORY ] ; then
-        mkdir $ENV_DIRECTORY
-fi
-
+for i in $DATA_VOLUMES ; do
+	if [ ! -d $ENV_DIRECTORY/$i ] ; then
+		mkdir -p $ENV_DIRECTORY/$i
+	fi
+	
+	if [ "$(ls -A $ENV_DIRECTORY/$i)" != "" ] ; then
+		VOLUMES="$VOLUMES -v $ENV_DIRECTORY/$i:/$i"
+	fi
+done
+echo $VOLUMES
 docker run -d --name $HOSTNAME \
 -h $HOSTNAME \
--p $VIP:80:80 \
--v  $ENV_DIRECTORY/var/www:/var/www \
+-p $VIP:80:80 -p $VIP443:443 \
+$VOLUMES \
 suse-apache
-#-v  $ENV_DIRECTORY/etc/apache2:/etc/apache2 \
