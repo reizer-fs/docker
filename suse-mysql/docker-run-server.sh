@@ -41,8 +41,8 @@ done
 docker run -d --name $HOSTNAME -p $VIP:3306:3306 \
 -e ADMIN_USER="admin" \
 -e ADMIN_PASS="admin" \
--e RESTRICTED_USER="dbuser" \
--e RESTRICTED_USER_PASSWORD="userpass" \
--e RESTRICTED_DB="db_" \
+-e RESTRICTED_USER="centreon" \
+-e RESTRICTED_USER_PASSWORD="centreon" \
+-e RESTRICTED_DB="centreon centreon_storage centreon_status" \
 $VOLUMES \
 $CONTAINER

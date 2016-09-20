@@ -1,8 +1,11 @@
 FROM centos:centos6
 MAINTAINER ffx <ffx@gmail.com>
 
+
+ENV http_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+ENV https_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+
 ENV CENTREON_CONF="/etc/centreon/"
-ENV CENTREON_MYSQL="/var/lib/mysql/"
 ENV CENTREON_WWW="/usr/share/centreon/www/"
 ENV TERM=xterm
 
@@ -43,9 +46,8 @@ RUN rm -rf /var/tmp/* /tmp/*
 RUN ln -s
 
 # Expose port SSH and HTTP for the service
-EXPOSE 22 80
+EXPOSE 22 80 443
 VOLUME ["${CENTREON_CONF}"]
-VOLUME ["${CENTREON_MYSQL}"]
 VOLUME ["${CENTREON_WWW}"]
 
 CMD ["/usr/bin/supervisord","--configuration=/etc/supervisord.conf"]
