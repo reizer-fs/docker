@@ -1,9 +1,13 @@
-FROM suse-refreshed:latest
+FROM opensuse:13.2
 
 MAINTAINER Horus "horus@gmail.com"
-RUN zypper rm -y krb5-mini
-RUN zypper in --auto-agree-with-licenses -y samba && \
-    useradd -c 'Samba User' -d /tmp -M -r smbuser && \
+
+ENV http_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+ENV https_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+
+RUN zypper --non-interactive rm krb5-mini
+RUN zypper --non-interactive in samba
+RUN useradd -c 'Samba User' -d /tmp -M -r smbuser && \
     sed -i 's|^\(   log file = \).*|\1/dev/stdout|' /etc/samba/smb.conf && \
     sed -i 's|^\(   unix password sync = \).*|\1no|' /etc/samba/smb.conf && \
     sed -i '/Share Definitions/,$d' /etc/samba/smb.conf && \
@@ -18,9 +22,9 @@ RUN zypper in --auto-agree-with-licenses -y samba && \
     echo '   printcap name = /dev/null' >>/etc/samba/smb.conf && \
     echo '   disable spoolss = yes' >>/etc/samba/smb.conf && \
     echo '   socket options = TCP_NODELAY' >>/etc/samba/smb.conf && \
-    echo '' >>/etc/samba/smb.conf && \
-    rm -rf /var/lib/apt/lists/* /tmp/*
+    echo '' >>/etc/samba/smb.conf
 
+RUN zypper clean -a
 COPY samba.sh /usr/bin/
 RUN chmod +x /usr/bin/samba.sh 
 EXPOSE 137 139 445

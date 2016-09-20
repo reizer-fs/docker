@@ -4,6 +4,7 @@ MAINTAINER Horus "horus@gmail.com"
 
 # make sure the repositories are up to date
 RUN zypper in -y pwgen mysql-server
+RUN zypper clean -a
 RUN rm -rf /var/lib/mysql/*
 
 # Add MySQL configuration
