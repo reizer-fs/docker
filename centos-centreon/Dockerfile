@@ -43,7 +43,6 @@ ADD run.sh /etc/centreon/
 RUN ln -s /usr/lib64/nagios/plugins/check_nrpe /usr/lib/nagios/plugins/check_nrpe
 RUN chmod +x /etc/centreon/run.sh
 RUN rm -rf /var/tmp/* /tmp/*
-RUN ln -s
 
 # Expose port SSH and HTTP for the service
 EXPOSE 22 80 443

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 help () {
-        echo "Usage: $0 hostname type(optional)"
+        echo "Usage: $0 hostname type link"
         echo "type = mysql apache squid samba torrent gitlab gcc"
 }
 
-if [ $# -lt 1 ] ; then
+if [ $# -lt 2 ] ; then
         help && exit 1
 fi
 
@@ -20,13 +20,14 @@ case $TYPE in
         torrent) CONTAINER="suse-torrent";;
         gitlab) CONTAINER="suse-gitlab";;
         gcc) CONTAINER="suse-gcc";;
-        centreon) CONTAINER="centos-centreon-light" PORTS="80" ;;
+        centreon) CONTAINER="centos-centreon" PORTS="80 443" ;;
         *) help && exit 1 ;;
 esac
 
 VIP=`getent hosts $HOSTNAME | awk '{print $1}'`
 ENV_DIRECTORY="/data/docker/$TYPE/$HOSTNAME"
 CONTAINER_DIR="usr/share/centreon etc/centreon etc/centreon-broker"
+LINKED_CONTAINER=$3
 
 # Create data dir
 if [ ! -d $ENV_DIRECTORY ] ; then
@@ -37,6 +38,11 @@ fi
 if [ -z $VIP ] ; then
 	echo "Please add a entry for $HOSTNAME in /etc/hosts"
 	exit 1
+fi
+
+#
+if [ ! -z $LINKED_CONTAINER ] ; then
+	EXTRA_OPTS="$EXTRA_OPTS --link $LINKED_CONTAINER"
 fi
 
 
@@ -53,4 +59,5 @@ docker run -d --name $HOSTNAME \
 -h $HOSTNAME \
 -p $VIP:80:80 -p $VIP:443:443 \
 $DOCKER_VOLUMES \
+$EXTRA_OPTS \
 $CONTAINER

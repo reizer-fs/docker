@@ -38,7 +38,7 @@ for i in $DATA_VOLUMES ; do
         fi
 done
 
-docker run -d --name $HOSTNAME -p $VIP:3306:3306 \
+docker run -d --name $HOSTNAME -h $HOSTNAME -p $VIP:3306:3306 \
 -e ADMIN_USER="admin" \
 -e ADMIN_PASS="admin" \
 -e RESTRICTED_USER="centreon" \
