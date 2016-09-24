@@ -23,7 +23,7 @@ case $TYPE in
         torrent) CONTAINER="suse-torrent";;
         gitlab) CONTAINER="suse-gitlab";;
         gcc) CONTAINER="suse-gcc";;
-        splunk) CONTAINER="debian-splunk"; PORTS="8000 443";;
+        splunk) CONTAINER="suse-splunk"; PORTS="8000 443";;
         splunk-light) CONTAINER="debian-splunk-light"; PORTS="8000 443";;
         *) help && exit 1 ;;
 esac
@@ -52,4 +52,4 @@ docker run -d --name $HOSTNAME \
 $VOLUMES \
 $EXTRA_OPTS \
 -e SPLUNK_START_ARGS="--accept-license --answer-yes --no-prompt" \
-debian-splunk
+$CONTAINER
