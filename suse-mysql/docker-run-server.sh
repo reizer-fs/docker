@@ -41,8 +41,8 @@ done
 docker run -d --name $HOSTNAME -h $HOSTNAME -p $VIP:3306:3306 \
 -e ADMIN_USER="admin" \
 -e ADMIN_PASS="admin" \
--e RESTRICTED_USER="centreon" \
--e RESTRICTED_USER_PASSWORD="centreon" \
--e RESTRICTED_DB="centreon centreon_storage centreon_status" \
+-e RESTRICTED_USER="wordpress" \
+-e RESTRICTED_USER_PASSWORD="wordpress" \
+-e RESTRICTED_DB="wordpress" \
 $VOLUMES \
 $CONTAINER

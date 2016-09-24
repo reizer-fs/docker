@@ -19,4 +19,4 @@ RUN chmod 755 /etc/entrypoint.sh
 EXPOSE 3128/tcp
 VOLUME ["${SQUID_CACHE_DIR}"]
 
-CMD ["/etc/entrypoint.sh"]
+CMD ["/bin/bash", "/etc/entrypoint.sh"]

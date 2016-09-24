@@ -20,7 +20,7 @@ case $TYPE in
         torrent) CONTAINER="suse-torrent";;
         gitlab) CONTAINER="suse-gitlab";;
         gcc) CONTAINER="suse-gcc";;
-        centreon) CONTAINER="centos-centreon" PORTS="80 443" ;;
+        centreon) CONTAINER="centos-centreon-light" PORTS="80 443" ;;
         *) help && exit 1 ;;
 esac
 

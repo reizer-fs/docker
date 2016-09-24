@@ -22,12 +22,11 @@ elif [ "$1" = 'start-service' ]; then
   # Also override ownership of these files to splunk:splunk
   if ! $(cmp --silent /var/opt/splunk/etc/splunk.version ${SPLUNK_HOME}/etc/splunk.version); then
     cp -fR /var/opt/splunk/etc ${SPLUNK_HOME}
+    chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} $SPLUNK_HOME/etc
+    chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} $SPLUNK_HOME/var
   else
     __license_ok=true
   fi
-
-  chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_HOME}/etc
-  chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_HOME}/var
 
   if tty -s; then
     __license_ok=true
@@ -39,7 +38,7 @@ elif [ "$1" = 'start-service' ]; then
 
   if [[ $__license_ok == "false" ]]; then
     cat << EOF
-Splunk Enterprise
+Splunk Light
 ==============
 
   Available Options:
@@ -52,26 +51,11 @@ Splunk Enterprise
 
   Usage:
 
-    docker run -it outcoldman/splunk:latest
-    docker run --env SPLUNK_START_ARGS="--accept-license" outcoldman/splunk:latest
+    docker run -it outcoldman/splunk:latest-light
+    docker run --env SPLUNK_START_ARGS="--accept-license" outcoldman/splunk:latest-light
 
 EOF
     exit 1
-  fi
-
-  if [[ $__configured == "false" ]]; then
-    # If we have not configured yet allow user to specify some commands which can be executed before we start Splunk for the first time
-    if [[ -n ${SPLUNK_BEFORE_START_CMD} ]]; then
-      sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk ${SPLUNK_BEFORE_START_CMD}"
-    fi
-    for n in {1..30}; do
-      if [[ -n $(eval echo \$\{SPLUNK_BEFORE_START_CMD_${n}\}) ]]; then
-        sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk $(eval echo \$\{SPLUNK_BEFORE_START_CMD_${n}\})"
-      else
-        # We do not want to iterate all, if one in the sequence is not set
-        break
-      fi
-    done
   fi
 
   sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk start ${SPLUNK_START_ARGS}
@@ -79,44 +63,11 @@ EOF
 
   # If this is first time we start this splunk instance
   if [[ $__configured == "false" ]]; then
-    __restart_required=false
-
-    # Setup deployment server
-    if [[ ${SPLUNK_ENABLE_DEPLOY_SERVER} == "true" ]]; then
-      sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk enable deploy-server -auth admin:changeme"
-      __restart_required=true
-    fi
-
-    # Setup deployment client
-    # http://docs.splunk.com/Documentation/Splunk/latest/Updating/Configuredeploymentclients
-    if [[ -n ${SPLUNK_DEPLOYMENT_SERVER} ]]; then
-      sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk set deploy-poll ${SPLUNK_DEPLOYMENT_SERVER} -auth admin:changeme"
-      __restart_required=true
-    fi
-
-    if [[ "$__restart_required" == "true" ]]; then
-      sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk restart"
-    fi
-
     # Setup listening
     # http://docs.splunk.com/Documentation/Splunk/latest/Forwarding/Enableareceiver
     if [[ -n ${SPLUNK_ENABLE_LISTEN} ]]; then
       sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk enable listen ${SPLUNK_ENABLE_LISTEN} -auth admin:changeme ${SPLUNK_ENABLE_LISTEN_ARGS}"
     fi
-
-    # Setup forwarding server
-    # http://docs.splunk.com/Documentation/Splunk/latest/Forwarding/Deployanixdfmanually
-    if [[ -n ${SPLUNK_FORWARD_SERVER} ]]; then
-      sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk add forward-server ${SPLUNK_FORWARD_SERVER} -auth admin:changeme ${SPLUNK_FORWARD_SERVER_ARGS}"
-    fi
-    for n in {1..10}; do
-      if [[ -n $(eval echo \$\{SPLUNK_FORWARD_SERVER_${n}\}) ]]; then
-        sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk add forward-server $(eval echo \$\{SPLUNK_FORWARD_SERVER_${n}\}) -auth admin:changeme $(eval echo \$\{SPLUNK_FORWARD_SERVER_${n}_ARGS\})"
-      else
-        # We do not want to iterate all, if one in the sequence is not set
-        break
-      fi
-    done
 
     # Setup monitoring
     # http://docs.splunk.com/Documentation/Splunk/latest/Data/MonitorfilesanddirectoriesusingtheCLI
@@ -149,8 +100,6 @@ EOF
 
   sudo -HEu ${SPLUNK_USER} tail -n 0 -f ${SPLUNK_HOME}/var/log/splunk/splunkd_stderr.log &
   wait
-elif [ "$1" = 'splunk-bash' ]; then
-  sudo -u ${SPLUNK_USER} /bin/bash --init-file ${SPLUNK_HOME}/bin/setSplunkEnv
 else
   "$@"
 fi

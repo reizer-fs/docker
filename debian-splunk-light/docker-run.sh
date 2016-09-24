@@ -23,12 +23,14 @@ case $TYPE in
         torrent) CONTAINER="suse-torrent";;
         gitlab) CONTAINER="suse-gitlab";;
         gcc) CONTAINER="suse-gcc";;
+        splunk) CONTAINER="debian-splunk"; PORTS="8000 443";;
+        splunk-light) CONTAINER="debian-splunk-light"; PORTS="8000 443";;
         *) help && exit 1 ;;
 esac
 
 VIP=`getent hosts $HOSTNAME | awk '{print $1}'`
-ENV_DIRECTORY="/data/docker/$TYPE/$HOSTNAME"
-DATA_VOLUMES="etc/apache2 var/www" 
+ENV_DIRECTORY="/data/docker/splunk/$HOSTNAME"
+DATA_VOLUMES=""
 
 if [ ! -z $LINKED_CONTAINER ] ; then
         EXTRA_OPTS="$EXTRA_OPTS --link $LINKED_CONTAINER"
@@ -36,17 +38,18 @@ fi
 
 
 for i in $DATA_VOLUMES ; do
-	if [ ! -d $ENV_DIRECTORY/$i ] ; then
-		mkdir -p $ENV_DIRECTORY/$i
-	fi
-	
-	if [ "$(ls -A $ENV_DIRECTORY/$i)" != "" ] ; then
-		VOLUMES="$VOLUMES -v $ENV_DIRECTORY/$i:/$i"
-	fi
+        if [ ! -d $ENV_DIRECTORY/$i ] ; then
+                mkdir -p $ENV_DIRECTORY/$i
+        fi
+
+        if [ "$(ls -A $ENV_DIRECTORY/$i)" != "" ] ; then
+                VOLUMES="$VOLUMES -v $ENV_DIRECTORY/$i:/$i"
+        fi
 done
 docker run -d --name $HOSTNAME \
 -h $HOSTNAME \
--p $VIP:80:80 -p $VIP:443:443 \
+-p $VIP:80:8000 -p $VIP:443:443 \
 $VOLUMES \
 $EXTRA_OPTS \
-suse-apache
+-e SPLUNK_START_ARGS="--accept-license --answer-yes --no-prompt" \
+$CONTAINER
