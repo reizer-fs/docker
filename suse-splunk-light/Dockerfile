@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM suse-refreshed
 
 MAINTAINER Denis Gladkikh <docker-splunk@denis.gladkikh.email>
 

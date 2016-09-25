@@ -2,8 +2,8 @@ FROM centos:centos6
 MAINTAINER ffx <ffx@gmail.com>
 
 
-ENV http_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
-ENV https_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+#ENV http_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
+#ENV https_proxy=http://proxywebsrv.tech.sits.credit-agricole.fr:8080/
 
 ENV CENTREON_CONF="/etc/centreon/"
 ENV CENTREON_WWW="/usr/share/centreon/www/"
