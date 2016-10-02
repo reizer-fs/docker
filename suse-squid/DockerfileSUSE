@@ -1,0 +1,5 @@
+FROM opensuse:leap
+
+MAINTAINER Horus "horus@gmail.com"
+
+CMD ["/bin/bash"]
