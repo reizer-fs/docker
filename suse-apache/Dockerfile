@@ -11,6 +11,7 @@ RUN zypper clean -a
 COPY vhost.conf /etc/apache2/conf.d/vhost.conf
 COPY entrypoint.sh /etc/entrypoint.sh
 RUN chmod 755 /etc/entrypoint.sh
+RUN sed -i '^DirectoryIndex.*$/DirectoryIndex index.php index.html index.html.var/g' /etc/apache2/httpd.conf
 
 EXPOSE 80/tcp
 EXPOSE 443/tcp
