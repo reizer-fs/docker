@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 /usr/bin/mysqld_safe > /dev/null 2>&1 &
 
 RET=1
@@ -20,7 +21,7 @@ echo "=> Creating MariaDB $RESTRICTED_USER user with $RESTRICTED_USER_PASSWORD p
 mysql -uroot -e "CREATE USER '$RESTRICTED_USER'@'%' IDENTIFIED BY '$RESTRICTED_USER_PASSWORD'"
 
 for DB in $RESTRICTED_DB ; do 
-mysql -uroot -e "CREATE DATABASE '$DB'"
+mysql -uroot -e "CREATE DATABASE $DB"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON $DB.* TO '$RESTRICTED_USER'@'%' IDENTIFIED BY '$RESTRICTED_USER_PASSWORD' WITH GRANT OPTION"
 done
 
