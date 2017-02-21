@@ -1,6 +1,8 @@
-FROM opensuse-refreshed:latest
+FROM opensuse:42.2
 
 MAINTAINER Horus "horus@gmail.com"
+ENV http_proxy=http://proxy:8080/
+ENV https_proxy=http://proxy:8080/
 
 # make sure the repositories are up to date
 #RUN cd /tmp/ && wget http://download.opensuse.org/repositories/home:/stargieg:/branches:/home:/microchip8/openSUSE_13.2/x86_64/nginx-1.7.7-13.1.x86_64.rpm
