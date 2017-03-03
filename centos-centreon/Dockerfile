@@ -9,9 +9,16 @@ ENV CENTREON_CONF="/etc/centreon/"
 ENV CENTREON_WWW="/usr/share/centreon/www/"
 ENV TERM=xterm
 
+
 # Install Centreon Repository
-RUN yum -y install http://yum.centreon.com/standard/3.0/stable/noarch/RPMS/ces-release-3.0-1.noarch.rpm
+
+RUN yum -y install wget
+RUN wget http://yum-1.centreon.com/standard/3.4/el6/stable/RPM-GPG-KEY-CES -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CES
+RUN wget http://yum.centreon.com/standard/3.4/el6/stable/centreon-stable.repo -O /etc/yum.repos.d/centreon-stable.repo
+
 RUN yum -y update
+RUN yum -y install centreon-base-config-centreon-engine centreon
+
 
 # Install ssh
 RUN yum -y install openssh-server openssh-client
@@ -20,13 +27,10 @@ RUN echo 'root:centreon' | chpasswd
 RUN sed -i 's/^#PermitRootLogin/PermitRootLogin/g' /etc/ssh/sshd_config
 RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 
-# Install centreon
-RUN yum -y install centreon centreon-base-config-centreon-engine centreon-installed centreon-clapi
-
-# Install Widgets
 RUN yum -y install centreon-widget-graph-monitoring centreon-widget-host-monitoring centreon-widget-service-monitoring centreon-widget-hostgroup-monitoring centreon-widget-servicegroup-monitoring
 # Fix pass in db
 RUN  sed -i 's/^;date.timezone =.*$/date.timezone = Europe\/Paris/g' /etc/php.ini
+RUN echo "SELINUX=disabled" > /etc/sysconfig/selinux
 
 # Set rights for setuid
 RUN chown root:centreon-engine /usr/lib/nagios/plugins/check_icmp
