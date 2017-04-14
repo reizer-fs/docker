@@ -1,8 +1,6 @@
 FROM opensuse:42.2
 
 MAINTAINER Horus "horus@gmail.com"
-#ENV http_proxy=http://proxy:8080/
-#ENV http_proxy=http://proxy:8080/
 ENV http_proxy=http://proxy:8080/
 ENV https_proxy=http://proxy:8080/
 

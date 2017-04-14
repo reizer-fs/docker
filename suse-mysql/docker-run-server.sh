@@ -10,11 +10,11 @@ if [ $# -lt 1 ] ; then
         help && exit 1
 fi
 
-
+. ./mysql.env
 HOSTNAME=$1
 TYPE=$2
 case $TYPE in
-        mysql) CONTAINER="suse-mysql" ; PORTS="3306" ;;
+        mysql) CONTAINER="opensuse/mariadb" ; PORTS="3306" ;;
         apache)CONTAINER="suse-apache" ; PORTS="80 443";;
         squid) CONTAINER="suse-squid" ; PORTS="3128" ;;
         samba) CONTAINER="suse-samba" ; PORTS="" ;;
@@ -39,10 +39,10 @@ for i in $DATA_VOLUMES ; do
 done
 
 docker run -d --name $HOSTNAME -h $HOSTNAME -p $VIP:3306:3306 \
--e ADMIN_USER="admin" \
--e ADMIN_PASS="admin" \
--e RESTRICTED_USER="ffx_wordpress" \
--e RESTRICTED_USER_PASSWORD="ffx_wordpress" \
--e RESTRICTED_DB="ffx_wordpress" \
+-e ADMIN_USER="$ADMIN_USER" \
+-e ADMIN_PASS="$ADMIN_PASS" \
+-e RESTRICTED_USER="$RESTRICTED_USER" \
+-e RESTRICTED_USER_PASSWORD="$RESTRICTED_USER_PASSWORD" \
+-e RESTRICTED_DB="$RESTRICTED_DB" \
 $VOLUMES \
 $CONTAINER
