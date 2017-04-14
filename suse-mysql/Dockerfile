@@ -1,11 +1,15 @@
 FROM opensuse:42.2
 
 MAINTAINER Horus "horus@gmail.com"
+#ENV http_proxy=http://proxy:8080/
+#ENV http_proxy=http://proxy:8080/
 ENV http_proxy=http://proxy:8080/
 ENV https_proxy=http://proxy:8080/
 
 # make sure the repositories are up to date
-RUN zypper in -y pwgen mysql-server
+RUN zypper ref -s
+RUN zypper in -y mariadb
+RUN zypper in -y pwgen
 RUN zypper clean -a
 RUN rm -rf /var/lib/mysql/*
 

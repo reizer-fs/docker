@@ -1,6 +1,6 @@
 FROM opensuse:42.2
 
-EXPOSE 80 443
+EXPOSE 80 443 3000
 
 WORKDIR /opt
 
@@ -8,24 +8,26 @@ WORKDIR /opt
 #RUN update-ca-certificates
 
 #RUN zypper --gpg-auto-import-keys ref -s
+ENV http_proxy=http://proxy:8080/
+ENV https_proxy=http://proxy:8080/
 
 
-
-
-RUN zypper install -y curl git-core unzip python-requests tar fontconfig cron
-
+RUN zypper install -y curl git-core unzip python-requests python-pysqlite tar fontconfig cron vi
 
 
 RUN zypper addrepo --no-gpgcheck http://download.opensuse.org/repositories/devel:languages:python/SLE_12_SP1/devel:languages:python.repo
 RUN zypper refresh
 RUN zypper install -y supervisor
+RUN zypper install -y python
 
-ADD nginx-1.10.2-1.sles12.ngx.x86_64.rpm /root/nginx.rpm
-RUN zypper --no-gpg-checks --non-interactive install /root/nginx.rpm
+#ADD nginx-1.10.2-1.sles12.ngx.x86_64.rpm /root/nginx.rpm
+#RUN zypper --no-gpg-checks --non-interactive install /root/nginx.rpm
 
-ADD mysql57-community-release-sles12-8.noarch.rpm /root/mysql.rpm
-RUN zypper --no-gpg-checks --non-interactive install /root/mysql.rpm
-RUN zypper  --no-gpg-checks --non-interactive install mysql-community-server
+#ADD mysql57-community-release-sles12-8.noarch.rpm /root/mysql.rpm
+#RUN zypper --no-gpg-checks --non-interactive install /root/mysql.rpm
+RUN zypper  --no-gpg-checks --non-interactive install mysql-server
+RUN zypper  --no-gpg-checks --non-interactive install nginx
+#RUN zypper  --no-gpg-checks --non-interactive install mysql-community-server
 
 RUN useradd -s /bin/false -U pmm
 RUN useradd -U www-data
