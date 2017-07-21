@@ -1,14 +1,11 @@
-FROM opensuse:42.2
+FROM opensuse:13.2
 
 MAINTAINER Horus "horus@gmail.com"
 ENV http_proxy=http://proxy:8080/
 ENV https_proxy=http://proxy:8080/
 
 
-
-
-RUN zypper --non-interactive rm krb5-mini
-RUN zypper --non-interactive in samba
+RUN zypper --disable-system-resolvables -n in samba
 RUN useradd -c 'Samba User' -d /tmp -M -r smbuser && \
     sed -i 's|^\(   log file = \).*|\1/dev/stdout|' /etc/samba/smb.conf && \
     sed -i 's|^\(   unix password sync = \).*|\1no|' /etc/samba/smb.conf && \
