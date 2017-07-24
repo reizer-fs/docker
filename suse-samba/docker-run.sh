@@ -1,4 +1,4 @@
-VIP="samba"
+VIP="suse-samba"
 ENV_DIRECTORY="/data/docker/samba/$VIP"
 SAMBA_DIR="box downloads"
 IP_VHOST=`getent hosts $VIP | awk '{print $1}'`
@@ -22,8 +22,7 @@ docker run -it -h $VIP \
 -p $IP_VHOST:139:139 -p $IP_VHOST:445:445 \
 $DOCKER_VOLUMES \
 -d suse-samba \
--u "fachinan;badpass" \
--u "aw_fachinan;badpass" \
--s "IN_BOX;/shares/box;yes;no;yes;;fachinan,aw_fachinan" \
--s "DOWNLOADS;/shares/downloads;yes;no;no;aw_fachinan,fachinan" \
+-u "ffx;badpass" \
+-s "IN_BOX;/shares/box;yes;no;yes;;ffx" \
+-s "DOWNLOADS;/shares/downloads;yes;no;no;ffx" \
 -n

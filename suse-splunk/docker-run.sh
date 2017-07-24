@@ -3,7 +3,7 @@
 
 help () {
         echo "Usage: $0 hostname type(optional)"
-        echo "type = mysql apache squid samba torrent gitlab gcc"
+        echo "type = mysql apache splunk squid samba torrent gitlab gcc"
 }
 
 if [ $# -lt 1 ] ; then
@@ -23,7 +23,7 @@ case $TYPE in
         torrent) IMAGE="suse-torrent";;
         gitlab) IMAGE="suse-gitlab";;
         gcc) IMAGE="suse-gcc";;
-        splunk) IMAGE="opensuse/splunk"; PORTS="8000 443";;
+        splunk) IMAGE="suse-splunk"; PORTS="8000 443";;
         splunk-light) IMAGE="debian-splunk-light"; PORTS="8000 443";;
         *) help && exit 1 ;;
 esac
