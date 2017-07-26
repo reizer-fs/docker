@@ -3,6 +3,9 @@ ENV_DIRECTORY="/data/docker/samba/$VIP"
 SAMBA_DIR="box downloads"
 IP_VHOST=`getent hosts $VIP | awk '{print $1}'`
 
+LIB_DIR="/opt/ffx/scripts/libs"
+. $LIB_DIR/systemd
+
 if [ ! -d $ENV_DIRECTORY ] ; then
 	mkdir -p $ENV_DIRECTORY/shares
 	mkdir -p $ENV_DIRECTORY/etc/
@@ -26,3 +29,5 @@ $DOCKER_VOLUMES \
 -s "IN_BOX;/shares/box;yes;no;yes;;ffx" \
 -s "DOWNLOADS;/shares/downloads;yes;no;no;ffx" \
 -n
+
+configure_docker_auto_start $VIP
