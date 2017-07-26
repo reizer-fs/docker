@@ -11,16 +11,19 @@ if [ $# -lt 1 ] ; then
 fi
 
 . ./mysql.env
+
 HOSTNAME=$1
 TYPE=$2
+
 case $TYPE in
-        mysql) CONTAINER="opensuse/mariadb" ; PORTS="3306" ;;
+        mysql|mariadb) CONTAINER="suse-mariadb" ; PORTS="3306" ;;
         apache)CONTAINER="suse-apache" ; PORTS="80 443";;
         squid) CONTAINER="suse-squid" ; PORTS="3128" ;;
         samba) CONTAINER="suse-samba" ; PORTS="" ;;
         torrent) CONTAINER="suse-torrent";;
         gitlab) CONTAINER="suse-gitlab";;
         gcc) CONTAINER="suse-gcc";;
+        splunk) CONTAINER="suse-splunk";;
         *) help && exit 1 ;;
 esac
 

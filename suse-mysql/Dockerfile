@@ -1,8 +1,6 @@
 FROM opensuse:42.2
 
 MAINTAINER Horus "horus@gmail.com"
-ENV http_proxy=http://proxy:8080/
-ENV https_proxy=http://proxy:8080/
 
 # make sure the repositories are up to date
 RUN zypper ref -s

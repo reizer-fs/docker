@@ -1,9 +1,6 @@
 FROM opensuse:42.2
 
 MAINTAINER Sebastian Petrovich <docker-splunk@gmail.com>
-ENV http_proxy=http://proxy:8080/
-ENV https_proxy=http://proxy:8080/
-
 
 
 ENV SPLUNK_PRODUCT splunk

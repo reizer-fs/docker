@@ -1,0 +1,5 @@
+mysql:
+  image: opensuse/mariadb
+  command: mysql-centreon -server --appendonly yes
+  ports:
+  - "3306:3306"

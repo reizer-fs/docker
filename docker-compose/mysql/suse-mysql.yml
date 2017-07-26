@@ -1,0 +1,10 @@
+mysql:
+  image: suse-mysql
+  ports:
+  - "3306:3306"
+  environment:
+  - "ADMIN_USER=admin"
+  - "ADMIN_PASS=admin"
+  - "RESTRICTED_USER=centreon"
+  - "RESTRICTED_USER_PASSWORD=centreon"
+  - "RESTRICTED_DB=centreon centreon_storage centreon_status"
