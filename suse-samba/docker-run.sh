@@ -19,7 +19,7 @@ done
 
 docker run -it -h $VIP \
 --name $VIP \
--p $IP_VHOST:139:139 -p $IP_VHOST:445:445 \
+-p $IP_VHOST:137:137 $IP_VHOST:139:139 -p $IP_VHOST:445:445 \
 $DOCKER_VOLUMES \
 -d suse-samba \
 -u "fachinan;badpass" \
