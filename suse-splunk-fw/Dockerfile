@@ -2,11 +2,10 @@ FROM opensuse:42.2
 
 MAINTAINER Sebastian Petrovich <docker-splunk@gmail.com>
 
-
-ENV SPLUNK_PRODUCT splunk
+ENV SPLUNK_PRODUCT universalforwarder
 ENV SPLUNK_VERSION 6.6.2
 ENV SPLUNK_BUILD 4b804538c686
-ENV SPLUNK_FILENAME splunk-${SPLUNK_VERSION}-${SPLUNK_BUILD}-Linux-x86_64.tgz
+ENV SPLUNK_FILENAME splunkforwarder-${SPLUNK_VERSION}-${SPLUNK_BUILD}-Linux-x86_64.tgz
 ENV SPLUNK_HOME /opt/splunk
 ENV SPLUNK_GROUP splunk
 ENV SPLUNK_USER splunk
@@ -38,8 +37,8 @@ RUN zypper in -y wget tar sudo \
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod +x /sbin/entrypoint.sh
 
-# Ports Splunk Web, Splunk Daemon, KVStore, Splunk Indexing Port, Network Input, HTTP Event Collector
-EXPOSE 8000/tcp 8089/tcp 8191/tcp 9997/tcp 1514 8088/tcp
+# Ports Splunk Daemon, Network Input, HTTP Event Collector
+EXPOSE 8089/tcp 1514 8088/tcp
 
 WORKDIR /opt/splunk
 
