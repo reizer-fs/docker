@@ -18,11 +18,7 @@ case $TYPE in
 		CONTAINER="suse-mysql"
 		PORTS="3306"
 		DATA_VOLUMES="var/lib/mysql"
-		ADMIN_USER="$ADMIN_USER"
-		ADMIN_PASS="$ADMIN_PASS"
-		RESTRICTED_USER="$RESTRICTED_USER"
-		RESTRICTED_USER_PASSWORD="$RESTRICTED_USER_PASSWORD"
-		RESTRICTED_DB="$RESTRICTED_DB"
+		ENV="ADMIN_USER=\"$ADMIN_USER\" ADMIN_PASS=\"$ADMIN_PASS\" RESTRICTED_USER=\"$RESTRICTED_USER\" RESTRICTED_USER_PASSWORD=\"$RESTRICTED_USER_PASSWORD\" RESTRICTED_DB=\"$RESTRICTED_DB\""
 		;;
         apache)
 		CONTAINER="suse-apache" 
@@ -72,7 +68,14 @@ if [ ! -z $PORTS ] ; then
 	done
 fi
 
-docker run -d --name $HOSTNAME -h $HOSTNAME $PORT $VOLUMES $EXTRAOPTIONS $CONTAINER
+# Handling environnment variable
+if [ ! -z "$ENV" ] ; then
+	for i in $ENV ; do
+		ENV_VARS=" $ENV_VARS -e $i "
+	done
+fi
+
+docker run -d --name $HOSTNAME -h $HOSTNAME $PORT $VOLUMES $ENV_VARS $EXTRAOPTIONS $CONTAINER
 
 if [ $? = "0" ]; then
 	cp /opt/ffx/systems/ubuntu/etc/systemd/system/docker.template /etc/systemd/system/docker-$HOSTNAME.service
