@@ -10,15 +10,10 @@ LIB_DIR="/opt/ffx/scripts/libs"
 
 HOSTNAME=$2
 VIP=`getent hosts $HOSTNAME | awk '{print $1}'`
-ENV_DIRECTORY="/data/docker/$HOSTNAME"
+ENV_DIRECTORY="/media/fx/3AD8C970D8C92AC9/Docker/Data/$HOSTNAME"
 
 if [ ! -d $ENV_DIRECTORY ] ; then
 	mkdir $ENV_DIRECTORY
 fi
 
-docker run -it -d -h $HOSTNAME \
---name $HOSTNAME \
--p $VIP:8080:3128 \
-suse-squid
-
-configure_docker_auto_start $HOSTNAME
+docker_run() $HOSTNAME
