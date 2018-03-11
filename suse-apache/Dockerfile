@@ -1,10 +1,7 @@
 FROM opensuse:42.2
 
 MAINTAINER Horus "horus@gmail.com"
-ENV http_proxy=http://proxy:8080/
-ENV https_proxy=http://proxy:8080/
-ENV APACHE_VERSION=2.4.10 \
-    TERM=xterm
+ENV TERM=xterm
 
 # make sure the repositories are up to date
 RUN zypper ref -s && zypper in -y apache2 php5 php5-mysql apache2-mod_php5 php5-json php5-gd php5-dom php5-zlib php5-openssl php5-curl

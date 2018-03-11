@@ -1,0 +1,9 @@
+mysql:
+  image: alpine-mysql
+  ports:
+  - "127.0.0.1:3306:3306"
+  environment:
+  - "MYSQL_ROOT_PWD=admin"
+  - "MYSQL_USER=centreon"
+  - "MYSQL_USER_PWD=centreon"
+  - "MYSQL_USER_DB=centreon centreon_storage centreon_status"

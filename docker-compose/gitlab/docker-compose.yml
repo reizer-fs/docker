@@ -9,17 +9,16 @@ services:
         volumes:
         - /srv/docker/gitlab/redis:/var/lib/redis:Z
 
-    mysql:
+    postgresql:
         restart: always
-        image: suse-mysql
+        image: sameersbn/postgresql:9.6-2
         volumes:
-        - /var/lib/postgresql:Z
+        - /srv/docker/gitlab/postgresql:/var/lib/postgresql:Z
         environment:
-        - ADMIN_USER="admin"
-        - ADMIN_PASS="admin"
-        - RESTRICTED_USER="centreon"
-        - RESTRICTED_USER_PASSWORD="centreon"
-        - RESTRICTED_DB="centreon centreon_storage centreon_status"
+        - DB_USER=gitlab
+        - DB_PASS=password
+        - DB_NAME=gitlabhq_production
+        - DB_EXTENSION=pg_trgm
 
     gitlab:
         restart: always
