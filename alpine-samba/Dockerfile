@@ -1,9 +1,7 @@
-FROM opensuse:13.2
+FROM alpine
 
-MAINTAINER Horus "horus@gmail.com"
-
-RUN zypper ref -s && zypper --disable-system-resolvables -n in samba
-RUN useradd -c 'Samba User' -d /tmp -M -r smbuser && \
+RUN apk update && apk add samba bash
+RUN adduser -g 'Samba User' -h /tmp -D smbuser && \
     sed -i 's|^\(   log file = \).*|\1/dev/stdout|' /etc/samba/smb.conf && \
     sed -i 's|^\(   unix password sync = \).*|\1no|' /etc/samba/smb.conf && \
     sed -i '/Share Definitions/,$d' /etc/samba/smb.conf && \
@@ -20,7 +18,7 @@ RUN useradd -c 'Samba User' -d /tmp -M -r smbuser && \
     echo '   socket options = TCP_NODELAY' >>/etc/samba/smb.conf && \
     echo '' >>/etc/samba/smb.conf
 
-RUN zypper clean -a
+RUN rm -rf /var/cache/apk/*
 COPY samba.sh /usr/bin/
 RUN chmod +x /usr/bin/samba.sh 
 EXPOSE 137 139 445

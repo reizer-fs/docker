@@ -2,10 +2,10 @@
  directory = /var/data/rDownloads
 
 # Folder to save & resume rtorrent sessions
- session = /var/data/session
+ session = /var/data/rDownloads/session/
 
 # Other Settings
- upload_rate = 10
+ upload_rate = 5
  download_rate = 200
  peer_exchange = yes
 # http_proxy=10.211.55.21:3128
@@ -20,7 +20,7 @@
  throttle_down = med,20
 
 # rtorrent_Watch is a folder for new torrents
- schedule = watch_directory,0,10,load_start=/var/data/watch/*.torrent
+ schedule = watch_directory,0,10,load_start=/var/data/*.torrent
  schedule = tied_directory,10,10,start_tied=
  schedule = untied_directory,10,10,close_untied=
 
