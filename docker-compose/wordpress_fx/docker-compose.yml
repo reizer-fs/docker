@@ -1,24 +1,23 @@
 version: '2'
 
 services:
-  mysql_wp:
-    hostname: mysql_wp
+  mysql_wp_fx:
+    hostname: mysql_wp_fx
     image: alpine-mysql
     ports:
-    - "3306:3306/tcp"
+    - "localhost:3306:3306/tcp"
     environment:
     - "MYSQL_ROOT_PWD=admin"
     - "MYSQL_USER=wordpress"
     - "MYSQL_USER_PWD=wordpress"
     - "MYSQL_USER_DB=wordpress"
-  php-fpm_wp:
+  php-fpm_wp_fx:
     hostname: php-fpm_wp
     image: alpine-php-fpm
     volumes:
-    - /docker/wordpress_fx/www:/var/www/localhost/htdocs/
     ports:
-    - "9000:9000/tcp"
-  nginx_wp:
+    - "localhost:9000:9000/tcp"
+  nginx_wp_fx:
     hostname: nginx_wp
     restart: always
     image: alpine-nginx
@@ -26,10 +25,10 @@ services:
     - php-fpm_wp
     - mysql_wp
     ports:
-    - "127.0.0.1:80:80"
+    - "localhost:80:80"
     volumes:
-    - /docker/wordpress_fx/www:/var/www/localhost/htdocs/
-    - /docker/wordpress_fx/etc:/etc/nginx/conf.d
+    - /data/Docker/Data/wordpress_fx/www/:/var/www/localhost/htdocs/
+    - /data/Docker/Data/wordpress_fx/etc/:/etc/nginx/conf.d/
     environment:
     - "DEBUG=false"
     - "NGINX_LOG_DIR=/var/log/nginx"
