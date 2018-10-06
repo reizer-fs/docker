@@ -1,33 +1,15 @@
-VIP="suse-samba"
-ENV_DIRECTORY="/data/docker/samba/$VIP"
-SAMBA_DIR="box downloads"
-IP_VHOST=`getent hosts $VIP | awk '{print $1}'`
+VIP="alpine-samba"
+IP_VHOST="192.168.56.1"
+#IP_VHOST=`getent hosts $VIP | awk '{print $1}'`
 
 LIB_DIR="/opt/ffx/scripts/libs"
-. $LIB_DIR/systemd
 
-if [ ! -d $ENV_DIRECTORY ] ; then
-	mkdir -p $ENV_DIRECTORY/shares
-	mkdir -p $ENV_DIRECTORY/etc/
-fi
 
-if [ "$(ls -A $ENV_DIRECTORY/etc 2> /dev/null)" != "" ]; then
-	DOCKER_VOLUMES=" -v $ENV_DIRECTORY/etc/:/etc/samba/"
-fi
-
-for i in $SAMBA_DIR ; do 
-	mkdir -p $ENV_DIRECTORY/shares/$i
-	DOCKER_VOLUMES="$DOCKER_VOLUMES -v $ENV_DIRECTORY/shares/$i:/shares/$i"
-done
-
-docker run -it -h $VIP \
---name $VIP \
--p $IP_VHOST:137:137 $IP_VHOST:139:139 -p $IP_VHOST:445:445 \
-$DOCKER_VOLUMES \
--d suse-samba \
--u "ffx;badpass" \
--s "IN_BOX;/shares/box;yes;no;yes;;ffx" \
--s "DOWNLOADS;/shares/downloads;yes;no;no;ffx" \
--n
-
-configure_docker_auto_start $VIP
+##### Mount Options ####
+#  name;/path[;browsable;readonly;guest;users;admins]"
+####
+VOL_OPTS='-v /data/iTunes:/data/iTunes -v /data/Downloads:/data/Downloads -v /data/Pictures:/data/Pictures'
+MOUNT_OPTS='-s "iTunes;/data/iTunes;yes;no;yes;;ffx" -s "Downloads;/data/Downloads;yes;no;no;ffx" -s "Pictures;/data/Pictures;yes;no;no;ffx"'
+PORTS_OPTS="-p $IP_VHOST:137:137 -p $IP_VHOST:139:139 -p $IP_VHOST:445:445"
+AUTH_OPTS='-u "ffx;badpass" -n'
+docker run -d --rm -h $VIP --name $VIP $VOL_OPTS $PORTS_OPTS alpine-samba $MOUNT_OPTS $AUTH_OPTS

@@ -12,6 +12,8 @@ RUN adduser -g 'Samba User' -h /tmp -D smbuser && \
     echo '   force user = smbuser' >>/etc/samba/smb.conf && \
     echo '   force group = users' >>/etc/samba/smb.conf && \
     echo '   load printers = no' >>/etc/samba/smb.conf && \
+    echo '   lanman auth = yes' >>/etc/samba/smb.conf && \
+    echo '   ntlm auth = yes' >>/etc/samba/smb.conf && \
     echo '   printing = bsd' >>/etc/samba/smb.conf && \
     echo '   printcap name = /dev/null' >>/etc/samba/smb.conf && \
     echo '   disable spoolss = yes' >>/etc/samba/smb.conf && \
