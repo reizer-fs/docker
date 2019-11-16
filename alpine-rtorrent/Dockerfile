@@ -6,5 +6,6 @@ RUN rm -rf /var/cache/apk/*
 RUN mkdir -p /var/data/
 
 COPY rtorrent.rc /root/.rtorrent.rc
+VOLUME "/var/data/"
 
-ENTRYPOINT ["sh"]
+ENTRYPOINT ["/usr/bin/rtorrent"]
