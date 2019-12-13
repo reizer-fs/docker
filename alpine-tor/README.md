@@ -1,88 +1,65 @@
-alpine-tor
-==================
+haproxy-tor
+-----------
 
 ```
                Docker Container
                -------------------------------------
-               (Optional)           <-> Tor Proxy 1
-Client <---->   Privoxy <-> HAproxy <-> Tor Proxy 2
-                                    <-> Tor Proxy n
+                        <-> Tor HTTPTunnelPort 1
+Client <---->  HAproxy  <-> Tor HTTPTunnelPort 2
+                        <-> Tor HTTPTunnelPort .
+                        <-> Tor HTTPTunnelPort .
+                        <-> Tor HTTPTunnelPort .
+                        <-> Tor HTTPTunnelPort n
 ```
 
-Parents
--------
- * [rdsubhas/docker-tor-privoxy-alpine](https://github.com/rdsubhas/docker-tor-privoxy-alpine)
- * [Negashev/docker-haproxy-tor](https://github.com/Negashev/docker-haproxy-tor)
-   * [marcelmaatkamp/docker-alpine-tor](https://github.com/marcelmaatkamp/docker-alpine-tor)
-   * [mattes/rotating-proxy](https://github.com/mattes/rotating-proxy)
 
-__Why:__ Lots of IP addresses. One single endpoint for your client.
-Load-balancing by HAproxy.
+How:
+---
+A single Ruby script to create all the needed config files (for tor, HAProxy).<br>
+Unlike the parents repos, there is no periodic killing and restarting of the clients.<br>
+The Ruby script is used mainly to make the setup easy to control,<br>
+since there is no real need for extra external software for this setup.<br>
 
-Optionaly adds support for [Privoxy](https://www.privoxy.org/) using
-`-e privoxy=1`, useful for http (default `8118`, changable via
-`-e privoxy_port=<port>`) proxy forward and ad removal.
+
+Changing Tor settings is done by changing the reference `torrc.cfg.erb` file.<br>
+If a change isn't consistent across all `torrc` files, `proxy_setup.rb` should be enhanced.<br>
+
+
+Usage:
+------
+```
+# Build the container
+docker build -t 'haproxy-tor' .
+# Run the container shell for manual testing:
+docker run -it haprox-tor:latest /bin/bash
+# Log into a running container 
+docker exec -i -t <container_id> /bin/bash
+# Running with default and minimal inputs:
+docker run -d -p 10000:10000 -p 10100:10100 -p 15000:15000 haprox-tor:latest
+# Changing the ports, external and internal:
+docker run -d -p 20000:20000 -p 20100:20100 -p 25000:25000 -e number_of_tors=15 -e haproxy_port=20000 -e haproxy_stat_port=20100 -e starting_tor_http_tunnel_port=25000 haprox_tor:latest
+# Changing the ports, internal only:
+docker run -d -p 10000:20000 -p 10100:20100 -p 15000:25000 -e number_of_tors=15 -e haproxy_port=20000 -e haproxy_stat_port=20100 -e starting_tor_http_tunnel_port=25000 haprox_tor:latest
+
+```
+
 
 Environment Variables
------
- * `tors` - Integer, number of tor instances to run. (Default: 20)
- * `new_circuit_period` - Integer, NewCircuitPeriod parameter value in seconds.
-   (Default: 2 minutes)
- * `max_circuit_dirtiness` - Integer, MaxCircuitDirtiness parameter value in
-   seconds. (Default: 10 minutes)
- * `circuit_build_timeout` - Integer, CircuitBuildTimeout parameter value in
+---------------------
+ * `haproxy_cfg_erb` - Path to the location of the HAProxy config file (Default: `/haproxy_tor/run_area/haproxy.cfg.erb`)
+ * `haproxy_port` - The port HAProxy client listen on (Default: 10000).
+ * `haproxy_stat_port` - The port HAProxy stats will listen on (Default: 10100).
+ * `number_of_tors` - The number of tor clients (Default: 10).
    seconds. (Default: 60 seconds)
- * `privoxy` - Boolean, whatever to run insance of privoxy in front of haproxy.
- * `privoxy_port` - Integer, port for privoxy. (Default: 8118)
- * `haproxy_port` - Integer, port for haproxy. (Default: 5566)
- * `haproxy_stats` - Integer, port for haproxy monitor. (Default: 2090)
- * `haproxy_login` and `haproxy_pass` - BasicAuth config for haproxy monitor.
-   (Default: `admin` in both variables)
- * `test_url` - URL for health check throught Tor proxy.
-   (Default: http://google.com)
- * `test_status` - Integer, HTTP status code for `test_url` in working case.
-   (Default: 302)
-
-Usage
------
-
-```bash
-# build docker container
-docker build -t zeta0/alpine-tor:latest .
-
-# ... or pull docker container
-docker pull zeta0/alpine-tor:latest
-
-# start docker container
-docker run -d -p 5566:5566 -p 2090:2090 -e tors=25 zeta0/alpine-tor
-
-# start docker with privoxy enabled and exposed
-docker run -d -p 8118:8118 -p 2090:2090 -e tors=25 -e privoxy=1 zeta0/alpine-tor
-
-# test with ...
-curl --socks5 localhost:5566 http://httpbin.org/ip
-
-# or if privoxy enabled ...
-curl --proxy localhost:8118 http://httpbin.org/ip
-
-# or to run chromium with your new found proxy
-chromium --proxy-server="http://localhost:8118" \
-    --host-resolver-rules="MAP * 0.0.0.0 , EXCLUDE localhost"
-
-# monitor
-# auth login:admin
-# auth pass:admin
-http://localhost:2090 or http://admin:admin@localhost:2090
-
-# start docket container with new auth
-docker run -d -p 5566:5566 -p 2090:2090 -e haproxy_login=MySecureLogin \
-    -e haproxy_pass=MySecurePassword zeta0/alpine-tor
-```
+ * `torrc_cfg_erb` - Path to the location of the torrc config file (Default: `/haproxy_tor/run_area/torrc.cfg.erb`)
+ * `starting_tor_http_tunnel_port` - The starting port for HTTPTunnelPort (Default: 15000).
+ * `tor_exit_node` - Tor ExitNode (Default: us). 
+ * `username` - HAProxy stats username (Default: username). 
+ * `password` - HAProxy stats password (Default: password).
+ 
 
 Further Readings
 ----------------
 
  * [Tor Manual](https://www.torproject.org/docs/tor-manual.html.en)
- * [Tor Control](https://www.thesprawl.org/research/tor-control-protocol/)
- * [HAProxy Manual](http://cbonte.github.io/haproxy-dconv/index.html)
- * [Privoxy Manual](https://www.privoxy.org/user-manual/)
+ * [HAProxy Manual](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html)

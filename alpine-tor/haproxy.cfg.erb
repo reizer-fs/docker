@@ -1,34 +1,42 @@
 global
-  daemon
-  user root
-  group root
-  pidfile <%= pid_file %>
+  #daemon
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  maxconn 4096
+  tune.ssl.default-dh-param 2048
 
 defaults
-  mode http
-  maxconn 50000
-  timeout client 3600s
-  timeout connect 1s
-  timeout queue 5s
-  timeout server 3600s
-
+  log               global
+  retries           3
+  maxconn           2000
+  timeout connect   5s
+  timeout client    50s
+  timeout server    50s
 
 listen stats
-  bind *:<%= stats %>
+  bind *:<%= @haproxy_stat_port %>
+  balance
   mode http
+  log  global
   stats enable
-  stats uri /
-  stats auth <%= login %>:<%= pass %>
+  stats uri /haproxy?stats
+  stats auth <%= "#{username}:#{password}" %>
+  maxconn 10
+  stats hide-version
+  stats refresh 30s
+  stats show-node
 
+frontend tor_front_end_<%= @haproxy_port %>
+  bind *:<%= @haproxy_port %>
+  mode http
+  use_backend tor_<%= @haproxy_port %>
 
-listen TOR-in
-  bind *:<%= port %>
-  mode tcp
-  default_backend TOR
-  balance roundrobin
-
-backend TOR
-  mode tcp
-  <% backends.each do |b| %>
-  server <%= b[:addr] %>:<%= b[:port] %> <%= b[:addr] %>:<%= b[:port] %> check
+backend tor_<%= @haproxy_port %>
+  #balance roundrobin
+  balance leastconn
+  mode http
+  option forwardfor
+  <% @backends.each do |b| %>
+  server <%= b[:name] %> <%= b[:addr] %>:<%= b[:port] %>
   <% end %>
+

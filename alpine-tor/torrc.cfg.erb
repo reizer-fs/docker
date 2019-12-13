@@ -1,0 +1,30 @@
+# Try for at most NUM seconds when building circuits. If the circuit isn't
+# open in that time, give up on it. (Default: 1 minute.)
+CircuitBuildTimeout 5
+# Send a padding cell every N seconds to keep firewalls from closing our
+# connections while Tor is not in use.
+KeepalivePeriod 60
+# Force Tor to consider whether to build a new circuit every NUM seconds.
+NewCircuitPeriod 15
+# How many entry guards should we keep at a time?
+NumEntryGuards 8
+UseEntryGuards 1
+
+Log notice file <%= tor_log_file %>
+DataDirectory <%= data_dir %>
+SocksPort <%= tor_socks_port %>
+HTTPTunnelPort <%= tor_http_tunnel_port %>
+MaxCircuitDirtiness 15
+# UseEntryGuards 0
+ExitRelay 0
+RefuseUnknownExits 1
+ExitNodes "{<%= @tor_exit_node %>}"
+ClientOnly 1
+# obsolete ==> AllowSingleHopCircuits 1
+# obsolete ==> ExcludeSingleHopRelays 0
+EnforceDistinctSubnets 1
+OptimisticData 1
+RunAsDaemon 0
+PidFile <%= tor_pid_file %>
+
+
