@@ -18,11 +18,13 @@ start_squid () {
 }
 
 create_cache_dir () {
-	squid -z -F
+	squid -z -F &
+        PID=$!
+        wait $(pgrep -P $PID)
 }
 
 create_log_dir
-#create_cache_dir
+create_cache_dir
 
 echo "Starting squid..."
 start_squid
