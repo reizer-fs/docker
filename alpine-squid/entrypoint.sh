@@ -13,18 +13,24 @@ create_cache_dir() {
   chown -R ${SQUID_USER} ${SQUID_CACHE_DIR}
 }
 
-start_squid () {
-	squid -NYC
-}
-
 create_cache_dir () {
-	squid -z -F &
+        squid -z -F &
         PID=$!
         wait $(pgrep -P $PID)
 }
 
 create_log_dir
 create_cache_dir
+sleep 5
 
-echo "Starting squid..."
-start_squid
+# default behaviour is to launch squid
+if [[ -z ${1} ]]; then
+  if [[ ! -d ${SQUID_CACHE_DIR}/00 ]]; then
+    echo "Initializing cache..."
+    $(which squid) -N -f /etc/squid/squid.conf -z
+  fi
+  echo "Starting squid..."
+  exec $(which squid) -f /etc/squid/squid.conf -NYCd 1 ${EXTRA_ARGS}
+else
+  exec "$@"
+fi
