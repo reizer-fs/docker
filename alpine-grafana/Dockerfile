@@ -1,56 +1,42 @@
-FROM golang:alpine
+FROM alpine
 
-ENV GRAFANA_VERSION=v4.3.2
+ENV GRAFANA_VERSION=7.0.0
+RUN apk --no-cache add openssl wget
 
-RUN apk add --no-cache --update --virtual .build-deps \
-        build-base git libffi-dev linux-headers mercurial nodejs pcre-dev \
-        postgresql-dev python3-dev tar \
-    && runDeps="ca-certificates curl netcat-openbsd pcre postgresql postgresql-contrib" \
-    && ln -s /bin/sh /bin/bash \
-    && deluser xfs \
-    && adduser -u 33 -D -G www-data -h /home/www www-data -s /bin/sh \
-    && mkdir -p /home/www \
-    && chown -R www-data.www-data /home/www \
-    && find /usr/local \
-       \( -type d -a -name test -o -name tests \) \
-       -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-       -exec rm -rf '{}' + \
-    && runDeps="$runDeps $( \
-       scanelf --needed --nobanner --recursive /usr/local \
-               | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-               | sort -u \
-               | xargs -r apk info --installed \
-               | sort -u \
-   )" \
-   && mkdir -p /go/src/github.com/grafana && cd /go/src/github.com/grafana \
-   && git clone --depth 1 https://github.com/grafana/grafana.git -b ${GRAFANA_VERSION} \
-   && cd grafana \
-   && git init \
-   && git remote add ${GRAFANA_VERSION} https://github.com/grafana/grafana.git \
-   && go mod init \
-   && go run build.go setup \
-   && go run build.go build  \
-   && npm install \
-   && npm install -g grunt-cli \
-   && cd /go/src/github.com/grafana/grafana && grunt \
-   && npm run build \
-   && npm uninstall -g grunt-cli \
-   && npm cache clear \
-   && mkdir -p /etc/grafana/bin/ \
-   && mkdir -p /etc/grafana/dashboard/ \
-   && cp -a /go/src/github.com/grafana/grafana/bin /etc/grafana/ \
-   && cp -ra /go/src/github.com/grafana/grafana/public_gen /etc/grafana/ \
-   && mv /etc/grafana/public_gen /etc/grafana/public \
-   && cp -ra /go/src/github.com/grafana/grafana/conf /etc/grafana/ \
-   && go clean -i -r \
-   && apk add --virtual .run-deps $runDeps \
-   && apk del .build-deps \
-   && rm -rf /go /tmp/* /var/cache/apk/* /root/.n* /etc/bin/phantomjs
-   
+ENV PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    GF_PATHS_CONFIG="/etc/grafana/grafana.ini" \
+    GF_PATHS_DATA="/var/lib/grafana" \
+    GF_PATHS_HOME="/usr/share/grafana" \
+    GF_PATHS_LOGS="/var/log/grafana" \
+    GF_PATHS_PLUGINS="/var/lib/grafana/plugins" \
+    GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
 
-VOLUME ["/var/log/grafana", "/etc/grafana"]
+RUN mkdir /tmp/grafana ${GF_PATHS_HOME} \
+  && wget -P /tmp/ https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz \
+  && tar xfz /tmp/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz --strip-components=1 -C ${GF_PATHS_HOME} \
+  && rm /tmp/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz
+
+
+WORKDIR $GF_PATHS_HOME    
+
+RUN set -ex \
+    && addgroup -S grafana \
+    && adduser -S -G grafana grafana \
+    && apk add --no-cache libc6-compat ca-certificates su-exec bash
+
+RUN mkdir -p "$GF_PATHS_HOME/.aws" \
+    && mkdir -p "$GF_PATHS_PROVISIONING/datasources" \
+        "$GF_PATHS_PROVISIONING/dashboards" \
+        "$GF_PATHS_PROVISIONING/notifiers" \
+        "$GF_PATHS_LOGS" \
+        "$GF_PATHS_PLUGINS" \
+        "$GF_PATHS_DATA" \
+    && chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" \
+    && chmod -R 777 "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING"
+
+COPY ./config/grafana.ini "$GF_PATHS_CONFIG"
+COPY ./run.sh /run.sh
+
 EXPOSE 3000
-WORKDIR /etc/grafana/
-COPY ./entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/etc/grafana/bin/grafana-server"]
+
+CMD ["/run.sh"]
