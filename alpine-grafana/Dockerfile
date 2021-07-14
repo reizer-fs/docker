@@ -1,4 +1,4 @@
-FROM alpine
+FROM golang:alpine
 
 ENV GRAFANA_VERSION=v4.3.2
 
@@ -8,7 +8,6 @@ RUN apk add --no-cache --update --virtual .build-deps \
     && runDeps="ca-certificates curl netcat-openbsd pcre postgresql postgresql-contrib" \
     && ln -s /bin/sh /bin/bash \
     && deluser xfs \
-    && addgroup -g 33 www-data \
     && adduser -u 33 -D -G www-data -h /home/www www-data -s /bin/sh \
     && mkdir -p /home/www \
     && chown -R www-data.www-data /home/www \
@@ -24,8 +23,11 @@ RUN apk add --no-cache --update --virtual .build-deps \
                | sort -u \
    )" \
    && mkdir -p /go/src/github.com/grafana && cd /go/src/github.com/grafana \
-   && git clone https://github.com/grafana/grafana.git -b ${GRAFANA_VERSION} \
+   && git clone --depth 1 https://github.com/grafana/grafana.git -b ${GRAFANA_VERSION} \
    && cd grafana \
+   && git init \
+   && git remote add ${GRAFANA_VERSION} https://github.com/grafana/grafana.git \
+   && go mod init \
    && go run build.go setup \
    && go run build.go build  \
    && npm install \
