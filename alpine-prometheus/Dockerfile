@@ -27,10 +27,7 @@ VOLUME /var/lib/prometheus
 ADD conf/prometheus.yml /etc/prometheus/
 ADD conf/alert.rules /etc/prometheus/
 
-ENTRYPOINT /usr/local/bin/prometheus \ 
-            --config.file /etc/prometheus/prometheus.yml \ 
-            --storage.tsdb.path /var/lib/prometheus/ \
-            --web.console.libraries=/usr/share/prometheus/console_libraries \
-            --web.console.templates=/usr/share/prometheus/consoles
+ENTRYPOINT ["/usr/local/bin/prometheus"]
+CMD ["--help"] 
 
 EXPOSE 9090
