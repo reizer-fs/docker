@@ -5,7 +5,7 @@ mkdir -p "$GF_PATHS_PROVISIONING/datasources" \
          "$GF_PATHS_PROVISIONING/notifiers" \
          "$GF_PATHS_LOGS" \
          "$GF_PATHS_PLUGINS" \
-         "$GF_PATHS_DATA"$
+         "$GF_PATHS_DATA"
 
 chown -R $GF_USER:$GF_GROUP \
          "$GF_PATHS_DATA" \
@@ -14,7 +14,7 @@ chown -R $GF_USER:$GF_GROUP \
          "$GF_PATHS_PLUGINS" \
          "$GF_PATHS_PROVISIONING"
 
-chmod -R 750 \
+chmod -R 755 \
          "$GF_PATHS_DATA" \
          "$GF_PATHS_HOME" \
          "$GF_PATHS_LOGS" \
@@ -98,7 +98,7 @@ if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
   done
 fi
 
-exec su-exec grafana grafana-server  						\
+exec su-exec $GF_USER grafana-server  						\
   --homepath="$GF_PATHS_HOME"                               \
   --config="$GF_PATHS_CONFIG"                               \
   --packaging=docker                                        \
