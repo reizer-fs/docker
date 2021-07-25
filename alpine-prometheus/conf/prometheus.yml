@@ -22,3 +22,8 @@ scrape_configs:
   static_configs:
   - targets: ['localhost:9103', 'localhost:9103', 'localhost:9103']
 
+- job_name: 'ohmgraphite'
+  scrape_interval: 5s
+  static_configs:
+  - targets: ['192.168.50.55:4445']
+
