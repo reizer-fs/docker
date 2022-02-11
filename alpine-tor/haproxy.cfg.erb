@@ -37,6 +37,6 @@ backend tor_<%= @haproxy_port %>
   mode http
   option forwardfor
   <% @backends.each do |b| %>
-  server <%= b[:name] %> <%= b[:addr] %>:<%= b[:port] %> check fall 2 rise 2
+  server <%= b[:name] %> <%= b[:addr] %>:<%= b[:port] %>
   <% end %>
 
