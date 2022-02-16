@@ -1,6 +1,6 @@
 FROM alpine
 
-ENV GRAFANA_VERSION=8.0.6
+ENV GRAFANA_VERSION=8.3.6
 RUN apk --no-cache add openssl wget
 
 ENV PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
