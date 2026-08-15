@@ -8,27 +8,13 @@ scrape_configs:
   static_configs:
   - targets: ['localhost:9090']
 
-- job_name: 'statsd_exporter'
-  scrape_interval: 1s
-  static_configs:
-  - targets: ['localhost:9102']
-    labels: {}
-  metric_relabel_configs:
-  - regex: '(job|instance|url)'
-    action: labeldrop
-
 - job_name: collectd
-  scrape_interval: 3s
+  scrape_interval: 10s
+  honor_timestamps: true
   static_configs:
-  - targets: ['localhost:9103', 'localhost:9103', 'localhost:9103']
-
-- job_name: 'ohmgraphite'
-  scrape_interval: 5s
-  static_configs:
-  - targets: ['192.168.50.55:4445']
+  - targets: ['10.11.12.1:9103']
 
 - job_name: 'libvirt'
   scrape_interval: 5s
   static_configs:
   - targets: ['10.11.12.1:9177']
-
